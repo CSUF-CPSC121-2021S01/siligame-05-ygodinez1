@@ -226,10 +226,10 @@ class Game : public graphics::AnimationEventListener,
           player_.SetX(old_x);
           player_.SetY(old_y);
         }
-      
-      //std::unique_ptr<PlayerProjectile> this_player_projectile(new PlayerProjectile(player_.GetX(), player_.GetY()));
 
-      //playerProjectile_.push_back(std::move(this_player_projectile));
+      std::unique_ptr<PlayerProjectile> this_player_projectile(new PlayerProjectile(player_.GetX(), player_.GetY()));
+
+      playerProjectile_.push_back(std::move(this_player_projectile));
     }
   }
 
