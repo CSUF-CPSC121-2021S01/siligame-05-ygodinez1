@@ -33,7 +33,10 @@ class GameElement {
   virtual void Move(const graphics::Image& image) = 0;
 
   bool IntersectsWith(GameElement *gameElement) {
-    if ((gameElement->GetWidth() == 0) || (gameElement->GetWidth() == 0))
+      return !(GetX() > gameElement->GetX() + gameElement->GetWidth() || gameElement->GetX() > GetX() + GetWidth() 
+      || GetY() > gameElement->GetY() + gameElement->GetHeight() || gameElement->GetY() > GetY() + GetHeight());
+
+/*    if ((gameElement->GetWidth() == 0) || (gameElement->GetWidth() == 0))
       return false;
     if ((width_ == 0) || (height_ == 0)) return false;
     if ((x_ > gameElement->GetX() + gameElement->GetWidth()) ||
@@ -43,7 +46,7 @@ class GameElement {
         (y_ + height_ < gameElement->GetY()))
       return false;
     return true;
-  }
+*/  }
 
   bool IsOutOfBounds(const graphics::Image& image) {
     int image_width = image.GetWidth();
