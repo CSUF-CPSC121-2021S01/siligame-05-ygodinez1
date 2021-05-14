@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <memory>
+#include <iostream>
 #include "cpputils/graphics/image.h"
 #include "opponent.h"
 
