@@ -179,20 +179,20 @@ class Game : public graphics::AnimationEventListener,
 
   void RemoveInactive() {
       for(int i = (opponentObjects_.size() - 1) ; i > -1; i--) {
-          std::unique_ptr<Opponent> this_opponent = std::move(opponentObjects_[i]);
-          if(this_opponent->GetIsActive() == false) {
+          //std::unique_ptr<Opponent> this_opponent = std::move(opponentObjects_[i]);
+          if(opponentObjects_[i]->GetIsActive() == false) {
               opponentObjects_.erase(opponentObjects_.begin() + i);
           }
       }
       for(int i = (opponentProjectile_.size() - 1) ; i > -1; i--) {
-          std::unique_ptr<OpponentProjectile> this_opponent_projectile = std::move(opponentProjectile_[i]);
-          if(this_opponent_projectile->GetIsActive() == false) {
+          //std::unique_ptr<OpponentProjectile> this_opponent_projectile = std::move(opponentProjectile_[i]);
+          if(opponentProjectile_[i]->GetIsActive() == false) {
               opponentProjectile_.erase(opponentProjectile_.begin() + i);
           }
       }
       for(int i = (playerProjectile_.size() - 1) ; i > -1; i--) {
-          std::unique_ptr<PlayerProjectile> this_player_projectile = std::move(playerProjectile_[i]);
-          if(this_player_projectile->GetIsActive() == false) {
+          //std::unique_ptr<PlayerProjectile> this_player_projectile = std::move(playerProjectile_[i]);
+          if(playerProjectile_[i]->GetIsActive() == false) {
               playerProjectile_.erase(playerProjectile_.begin() + i);
           }
       }
@@ -203,7 +203,7 @@ class Game : public graphics::AnimationEventListener,
         CreateOpponents();
     }
     MoveGameElements();
-    //LaunchProjectiles();
+    LaunchProjectiles();
     FilterIntersections();
     RemoveInactive();
     UpdateScreen();
@@ -211,10 +211,10 @@ class Game : public graphics::AnimationEventListener,
   }
 
   void OnMouseEvent(const graphics::MouseEvent& mouseEvent) {
-    if ((mouseEvent.GetMouseAction() == graphics::MouseAction::kMoved) ||
+    if ((mouseEvent.GetMouseAction() == graphics::MouseAction::kPressed) ||
         (mouseEvent.GetMouseAction() == graphics::MouseAction::kDragged)) {
-      int xUpdate = (mouseEvent.GetX() - (player_.GetWidth() / 2));
-      int yUpdate = (mouseEvent.GetY() - (player_.GetHeight() / 2));
+      int xUpdate = mouseEvent.GetX() - player_.GetWidth() / 2;
+      int yUpdate = mouseEvent.GetY() - player_.GetHeight() / 2;
       int old_x = player_.GetX();
       int old_y = player_.GetY();
 
@@ -222,8 +222,8 @@ class Game : public graphics::AnimationEventListener,
       player_.SetY(yUpdate);
 
       if (player_.IsOutOfBounds(image_)) {
-          player_.SetX(xUpdate);
-          player_.SetY(yUpdate);
+          player_.SetX(old_x);
+          player_.SetY(old_y);
         }
       
       std::unique_ptr<PlayerProjectile> this_player_projectile(new PlayerProjectile(player_.GetX(), player_.GetY()));
