@@ -71,7 +71,7 @@ class Game : public graphics::AnimationEventListener,
     }
     if (player_.GetIsActive() == true) player_.Draw(image_);
 
-    if(state == true) {
+    if(state == false) {
         std::string score_string = std::to_string(score);
         image_.DrawText(750,550,score_string, 40, graphics::Color(0,0,0));
     } else {
@@ -100,38 +100,82 @@ class Game : public graphics::AnimationEventListener,
   }
 
   void FilterIntersections() {
-    for (int i = 0; i < opponentObjects_.size(); i++) {
-      if(player_.GetIsActive() && opponentObjects_[i].get()->GetIsActive()) {
-        if (player_.IntersectsWith(opponentObjects_[i].get())) {
-            player_.SetIsActive(false);
-            opponentObjects_[i]->SetIsActive(false);
-            state = false;
-        }
+      state = false;
+      for (int i = 0; i < opponentObjects_.size(); i++) {
+          if (opponentObjects_[i]->GetIsActive() && player_.GetIsActive() &&
+            player_.IntersectsWith(opponentObjects_[i].get())) {
+                opponentObjects_[i]->SetIsActive(false);
+                player_.SetIsActive(false);
+                state = true;
+            } else {
+                for (int j = 0; j < playerProjectile_.size(); j++) {
+                    if (opponentObjects_[i]->GetIsActive() && 
+                    playerProjectile_[j]->GetIsActive() && 
+                    playerProjectile_[j]->IntersectsWith(opponentObjects_[i].get())) {
+                        opponentObjects_[i]->SetIsActive(false);
+                        playerProjectile_[j]->SetIsActive(false);
+                        score++;
+                    }
+                }
+            }
       }
+
+      for (int i = 0; i < opponentProjectile_.size(); i++) {
+          if (opponentProjectile_[i]->GetIsActive() && player_.GetIsActive() && 
+            player_.IntersectsWith(opponentProjectile_[i].get())) {
+                opponentProjectile_[i]->SetIsActive(false);
+                player_.SetIsActive(false);
+                state = true;
+            }
+      }
+    
+
+    if(player_.GetIsActive() == false) {
+        score = 0;
     }
 
-    for (int i = 0; i < playerProjectile_.size(); i++) {
-      for (int j = 0; j < opponentObjects_.size(); j++) {
-        if(playerProjectile_[i]->GetIsActive() && opponentObjects_[j]->GetIsActive()) {
-            if (playerProjectile_[i]->IntersectsWith(opponentObjects_[j].get())) {
-            playerProjectile_[i]->SetIsActive(false);
-            opponentObjects_[j]->SetIsActive(false);
+    /*
+    state = false;
+    for (int i = 0; i < opponentObjects_.size(); i++) {
+      if (opponentObjects_[i]->GetIsActive() && player_.GetIsActive() && player_.IntersectsWith(opponentObjects_[i].get())) {
+            player_.SetIsActive(false);
+            opponentObjects_[i]->SetIsActive(false);
+            state = true;
+        
+      } else { 
+        //state = false;
+        for (int j = 0; j < playerProjectile_.size(); j++) {
+        if (opponentObjects_[i]->GetIsActive() && playerProjectile_[j]->GetIsActive() 
+              && playerProjectile_[j]->IntersectsWith(opponentObjects_[i].get())) {
+            playerProjectile_[j]->SetIsActive(false);
+            opponentObjects_[i]->SetIsActive(false);
             state = false;
-            }
-        }
+ 
+    } else {
+        //state = false;
+    }
+
+        } 
       }
     }
 
     for (int i = 0; i < opponentProjectile_.size(); i++) {
-      if(opponentProjectile_[i]->GetIsActive() && player_.GetIsActive())  {
-        if (opponentProjectile_[i]->IntersectsWith(&player_)) {
+      if (opponentProjectile_[i]->GetIsActive() && player_.GetIsActive() && player_.IntersectsWith(opponentProjectile_[i].get())) {
             opponentProjectile_[i]->SetIsActive(false);
             player_.SetIsActive(false);
-            score++;
+            state = true;
+        } else {
+            //state = false;
         }
-      }
-    }
-  }
+      } 
+
+ */ }
+
+/*
+    for (int i = 0; i < opponent_projectiles_.size(); i++) {    if (opponent_projectiles_[i].GetIsActive() && my_player_.GetIsActive() &&        my_player_.IntersectsWith(opponent_projectiles_[i])) {      opponent_projectiles_[i].SetIsActive(false);      my_player_.SetIsActive(false);    }  }}
+*/
+
+
 
   void RemoveInactive() {
       for(int i = (opponentObjects_.size() - 1) ; i > -1; i--) {
@@ -159,7 +203,7 @@ class Game : public graphics::AnimationEventListener,
         CreateOpponents();
     }
     MoveGameElements();
-    LaunchProjectiles();
+    //LaunchProjectiles();
     FilterIntersections();
     RemoveInactive();
     UpdateScreen();
@@ -189,7 +233,7 @@ class Game : public graphics::AnimationEventListener,
   }
 
  private:
-  int score;
+  int score = 0;
   bool state;
   graphics::Image image_;
   std::vector<std::unique_ptr<Opponent>> opponentObjects_;
