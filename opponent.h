@@ -121,11 +121,11 @@ class Opponent : public GameElement {
 
   std::unique_ptr<class OpponentProjectile> LaunchProjectile() {
       std::unique_ptr<OpponentProjectile> new_projectile;
-      if(count % 2 == 0) {
+      if(count % 20 == 0) {
+          new_projectile = std::make_unique<OpponentProjectile>(x_ + 25, y_ + 20);          
+      } else {
           new_projectile = nullptr;
           count++;
-      } else {
-          new_projectile = std::make_unique<OpponentProjectile>(x_ + 25, y_ + 20);
       }
       return std::move(new_projectile);
   }
