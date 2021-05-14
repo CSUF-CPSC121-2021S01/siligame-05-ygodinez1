@@ -1,5 +1,6 @@
 #include <iostream>
 #include <memory>
+#include <iostream>
 #include "cpputils/graphics/image.h"
 
 #ifndef GAME_ELEMENT_H
@@ -32,15 +33,14 @@ class GameElement {
   virtual void Move(const graphics::Image& image) = 0;
 
   bool IntersectsWith(GameElement *gameElement) {
-    GameElement this_gameElement = *gameElement;
-    if ((this_gameElement.GetWidth() == 0) || (this_gameElement.GetWidth() == 0))
+    if ((gameElement->GetWidth() == 0) || (gameElement->GetWidth() == 0))
       return false;
     if ((width_ == 0) || (height_ == 0)) return false;
-    if ((x_ > this_gameElement.GetX() + this_gameElement.GetWidth()) ||
-        (x_ + width_ < this_gameElement.GetX()))
+    if ((x_ > gameElement->GetX() + gameElement->GetWidth()) ||
+        (x_ + width_ < gameElement->GetX()))
       return false;
-    if ((y_ > this_gameElement.GetY() + this_gameElement.GetHeight()) ||
-        (y_ + height_ < this_gameElement.GetY()))
+    if ((y_ > gameElement->GetY() + gameElement->GetHeight()) ||
+        (y_ + height_ < gameElement->GetY()))
       return false;
     return true;
   }
