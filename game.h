@@ -34,7 +34,7 @@ class Game : public graphics::AnimationEventListener,
 
   void CreateOpponents() {
     std::unique_ptr<Opponent> opponent(new Opponent(0,0));
-    opponentObjects_.push_back(opponent);
+    opponentObjects_.push_back(std::move(opponent));
   }
 
   void Init() {
@@ -49,7 +49,7 @@ class Game : public graphics::AnimationEventListener,
           std::unique_ptr<OpponentProjectile> functons_oponent 
           = std::move(opponentObjects_[i]->LaunchProjectile());
           if(functons_oponent != nullptr) {
-              opponentProjectile_.push_back(functons_oponent);
+              opponentProjectile_.push_back(std::move(functons_oponent));
           }
       }
   }
@@ -58,21 +58,16 @@ class Game : public graphics::AnimationEventListener,
     graphics::Color red(255, 0, 0);
     // image_.DrawRectangle(0, 0, image_.GetWidth(), image_.GetHeight(), red);
     for (int i = 0; i < opponentObjects_.size(); i++) {
-      std::unique_ptr<Opponent> this_opponent = std::move(opponentObjects_[i]);
-      if (this_opponent.get()->GetIsActive() == true)
+      if (opponentObjects_[i]->GetIsActive() == true)
         opponentObjects_[i]->Draw(image_);
     }
     for (int i = 0; i < opponentProjectile_.size(); i++) {
-      std::unique_ptr<OpponentProjectile> this_opponent_projectile 
-      = std::move(opponentProjectile_[i]);
-      if (this_opponent_projectile->GetIsActive() == true)
-        this_opponent_projectile->Draw(image_);
+      if (opponentProjectile_[i]->GetIsActive() == true)
+        opponentProjectile_[i]->Draw(image_);
     }
     for (int i = 0; i < playerProjectile_.size(); i++) {
-      std::unique_ptr<PlayerProjectile> this_player_projectile 
-      = std::move(playerProjectile_[i]);
-      if (this_player_projectile->GetIsActive() == true)
-        this_player_projectile->Draw(image_);
+      if (playerProjectile_[i]->GetIsActive() == true)
+        playerProjectile_[i]->Draw(image_);
     }
     if (player_.GetIsActive() == true) player_.Draw(image_);
 
@@ -88,49 +83,39 @@ class Game : public graphics::AnimationEventListener,
 
   void MoveGameElements() {
     for (int i = 0; i < opponentObjects_.size(); i++) {
-      std::unique_ptr<Opponent> this_opponent = std::move(opponentObjects_[i]);
-      if(this_opponent->GetIsActive() == true) {
-            this_opponent->Move(image_);
+      if(opponentObjects_[i]->GetIsActive() == true) {
+            opponentObjects_[i]->Move(image_);
       }
     }
-
     for (int i = 0; i < opponentProjectile_.size(); i++) {
-      std::unique_ptr<OpponentProjectile> this_opponent_projectile 
-      = std::move(opponentProjectile_[i]);
-      if(this_opponent_projectile->GetIsActive() == true) {
-            this_opponent_projectile->Move(image_);
+      if(opponentProjectile_[i]->GetIsActive() == true) {
+            opponentProjectile_[i]->Move(image_);
       }
     }
     for (int i = 0; i < playerProjectile_.size(); i++) {
-      std::unique_ptr<PlayerProjectile> this_player_projectile 
-      = std::move(playerProjectile_[i]);
-        if(this_player_projectile->GetIsActive() == true) {
-            this_player_projectile->Move(image_);
+        if(playerProjectile_[i]->GetIsActive() == true) {
+            playerProjectile_[i]->Move(image_);
       }    
     }
   }
 
   void FilterIntersections() {
     for (int i = 0; i < opponentObjects_.size(); i++) {
-      std::unique_ptr<Opponent> this_opponent = std::move(opponentObjects_[i]);
-      if(player_.GetIsActive() && this_opponent.get()->GetIsActive()) {
-        if (player_.IntersectsWith(this_opponent.get())) {
+      if(player_.GetIsActive() && opponentObjects_[i].get()->GetIsActive()) {
+        if (player_.IntersectsWith(opponentObjects_[i].get())) {
             player_.SetIsActive(false);
-            this_opponent->SetIsActive(false);
+            opponentObjects_[i]->SetIsActive(false);
             state = false;
         }
       }
     }
 
     for (int i = 0; i < playerProjectile_.size(); i++) {
-      std::unique_ptr<PlayerProjectile> this_player_projectile 
-      = std::move(playerProjectile_[i]);
       for (int j = 0; j < opponentObjects_.size(); j++) {
-        std::unique_ptr<Opponent> this_opponent = std::move(opponentObjects_[j]);
-        if(this_player_projectile->GetIsActive() && this_opponent->GetIsActive()) {
-            if (this_player_projectile->IntersectsWith(this_opponent.get())) {
-            this_player_projectile->SetIsActive(false);
-            this_opponent->SetIsActive(false);
+        if(playerProjectile_[i]->GetIsActive() && opponentObjects_[j]->GetIsActive()) {
+            if (playerProjectile_[i]->IntersectsWith(opponentObjects_[j].get())) {
+            playerProjectile_[i]->SetIsActive(false);
+            opponentObjects_[j]->SetIsActive(false);
             state = false;
             }
         }
@@ -138,11 +123,9 @@ class Game : public graphics::AnimationEventListener,
     }
 
     for (int i = 0; i < opponentProjectile_.size(); i++) {
-      std::unique_ptr<OpponentProjectile> this_opponent_projectile 
-      = std::move(opponentProjectile_[i]);
-      if(this_opponent_projectile->GetIsActive() && player_.GetIsActive())  {
-        if (this_opponent_projectile->IntersectsWith(&player_)) {
-            this_opponent_projectile->SetIsActive(false);
+      if(opponentProjectile_[i]->GetIsActive() && player_.GetIsActive())  {
+        if (opponentProjectile_[i]->IntersectsWith(&player_)) {
+            opponentProjectile_[i]->SetIsActive(false);
             player_.SetIsActive(false);
             score++;
         }
@@ -151,23 +134,21 @@ class Game : public graphics::AnimationEventListener,
   }
 
   void RemoveInactive() {
-      for(int i = 0; i < opponentObjects_.size(); i++) {
+      for(int i = (opponentObjects_.size() - 1) ; i > -1; i--) {
           std::unique_ptr<Opponent> this_opponent = std::move(opponentObjects_[i]);
           if(this_opponent->GetIsActive() == false) {
               opponentObjects_.erase(opponentObjects_.begin() + i);
           }
       }
-      for(int i = 0; i < opponentProjectile_.size(); i++) {
-          std::unique_ptr<OpponentProjectile> this_opponent_projectile 
-      = std::move(opponentProjectile_[i]);
-
+      for(int i = (opponentProjectile_.size() - 1) ; i > -1; i--) {
+          std::unique_ptr<OpponentProjectile> this_opponent_projectile = std::move(opponentProjectile_[i]);
           if(this_opponent_projectile->GetIsActive() == false) {
               opponentProjectile_.erase(opponentProjectile_.begin() + i);
           }
       }
-      for(int i = playerProjectile_.size() - 1 ; i >= 0; i++) {
-          PlayerProjectile this_player_projectile = *playerProjectile_[i];
-          if(this_player_projectile.GetIsActive() == false) {
+      for(int i = (playerProjectile_.size() - 1) ; i > -1; i--) {
+          std::unique_ptr<PlayerProjectile> this_player_projectile = std::move(playerProjectile_[i]);
+          if(this_player_projectile->GetIsActive() == false) {
               playerProjectile_.erase(playerProjectile_.begin() + i);
           }
       }
@@ -201,13 +182,9 @@ class Game : public graphics::AnimationEventListener,
           player_.SetY(yUpdate);
         }
       
-      std::unique_ptr<PlayerProjectile> 
-      this_player_projectile(new PlayerProjectile(player_.GetX(), player_.GetY()))
+      std::unique_ptr<PlayerProjectile> this_player_projectile(new PlayerProjectile(player_.GetX(), player_.GetY()));
 
-      playerProjectile_.push_back();
-   //   std::unique_ptr<PlayerProjectile> 
-   //   this_player_projectile(new PlayerProjectile(player_.GetX(), player_.GetY()));
-    //  playerProjectile_.push_back(this_player_projectile);
+      playerProjectile_.push_back(std::move(this_player_projectile));
     }
   }
 
