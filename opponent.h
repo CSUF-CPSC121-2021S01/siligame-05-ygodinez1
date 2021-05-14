@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <iostream>
 #include "cpputils/graphics/image.h"
 #include "game_element.h"
 #include <memory>
@@ -118,17 +119,15 @@ class Opponent : public GameElement {
     }
   }
 
-  std::unique_ptr<OpponentProjectile> LaunchProjectile() {
-      std::unique_ptr<OpponentProjectile> this_projectile;
-      if(count % 2 = 0) {
-          this_projectile = nullptr;
-          return this_projectile;
+  std::unique_ptr<class OpponentProjectile> LaunchProjectile() {
+      std::unique_ptr<OpponentProjectile> new_projectile;
+      if(count % 2 == 0) {
+          new_projectile = nullptr;
           count++;
       } else {
-          this_projectile->SetY(y-20);
-          this_projectile->SetY(x+25);
-          return std::move(this_projectile);
+          new_projectile = std::make_unique<OpponentProjectile>(x_ + 25, y_ + 20);
       }
+      return std::move(new_projectile);
   }
  
   private:
