@@ -211,12 +211,13 @@ class Game : public graphics::AnimationEventListener,
   }
 
   void OnMouseEvent(const graphics::MouseEvent& mouseEvent) {
-    if ((mouseEvent.GetMouseAction() == graphics::MouseAction::kPressed) ||
-        (mouseEvent.GetMouseAction() == graphics::MouseAction::kDragged)) {
-      int xUpdate = mouseEvent.GetX() - player_.GetWidth() / 2;
-      int yUpdate = mouseEvent.GetY() - player_.GetHeight() / 2;
-      int old_x = player_.GetX();
-      int old_y = player_.GetY();
+    if (mouseEvent.GetMouseAction() == graphics::MouseAction::kPressed ||
+        mouseEvent.GetMouseAction() == graphics::MouseAction::kDragged) {
+            
+            int xUpdate = mouseEvent.GetX() - player_.GetWidth() / 2;
+            int yUpdate = mouseEvent.GetY() - player_.GetHeight() / 2;
+            int old_x = player_.GetX();
+            int old_y = player_.GetY();
 
       player_.SetX(xUpdate);
       player_.SetY(yUpdate);
@@ -226,9 +227,9 @@ class Game : public graphics::AnimationEventListener,
           player_.SetY(old_y);
         }
       
-      std::unique_ptr<PlayerProjectile> this_player_projectile(new PlayerProjectile(player_.GetX(), player_.GetY()));
+      //std::unique_ptr<PlayerProjectile> this_player_projectile(new PlayerProjectile(player_.GetX(), player_.GetY()));
 
-      playerProjectile_.push_back(std::move(this_player_projectile));
+      //playerProjectile_.push_back(std::move(this_player_projectile));
     }
   }
 
