@@ -1,9 +1,8 @@
 #include <iostream>
+#include <memory>
 #include <string>
-#include <iostream>
 #include "cpputils/graphics/image.h"
 #include "game_element.h"
-#include <memory>
 
 #ifndef OPPONENT_H
 #define OPPONENT_H
@@ -120,18 +119,18 @@ class Opponent : public GameElement {
   }
 
   std::unique_ptr<class OpponentProjectile> LaunchProjectile() {
-      std::unique_ptr<OpponentProjectile> new_projectile;
-      if(count % 20 == 0) {
-          new_projectile = std::make_unique<OpponentProjectile>(x_ + 25, y_ + 20);          
-      } else {
-          new_projectile = nullptr;
-          count++;
-      }
-      return std::move(new_projectile);
+    std::unique_ptr<OpponentProjectile> new_projectile;
+    if (count % 20 == 0) {
+      new_projectile = std::make_unique<OpponentProjectile>(x_ + 25, y_ + 20);
+    } else {
+      new_projectile = nullptr;
+      count++;
+    }
+    return std::move(new_projectile);
   }
- 
-  private:
-    int count;
+
+ private:
+  int count;
 };
 
 #endif
